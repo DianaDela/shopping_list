@@ -28,6 +28,7 @@ function App() {
       checked:false
     },
   ]);
+
   const handleNewListItemButtom = async () =>{
     const {value} = await Swal.fire({
       title:"New Item Information",
@@ -61,6 +62,7 @@ function App() {
         const name= Swal.getPopup().querySelector('#name').value;
         const quantity= Swal.getPopup().querySelector('#quantity').value;
         const unit= Swal.getPopup().querySelector('#unit').value;
+
         if (!name|| !quantity || !unit) {
           Swal.showValidationMessage('Please enter the item full information');
         }
@@ -74,8 +76,11 @@ function App() {
       ...listItems,
       {id: (listItems.length + 1).toString(), ...value, checked:false},
     ]);
+
     console.log({value});
   }
+
+
   const handleCheckboxChange = (e) =>{
     const newList = listItems.map(item => {
       if(item.id === e.target.name){
@@ -85,6 +90,7 @@ function App() {
     })
     setListItems(newList);
   };
+
 return(
   <div className="container text-center">
     <div className="row">
@@ -101,11 +107,9 @@ return(
     {
       listItems.map((listItem)=>(
         <ListItem
-        id={listItem.id}
-        name={listItem.name}
-        quantity={listItem.quantity}
-        unit={listItem.unit}
-        checked={listItem.checked}
+        item={listItem}
+        listItems={listItems}
+        setListItems={setListItems}
         handleCheckboxChange={handleCheckboxChange}
         />
       ))
@@ -120,4 +124,5 @@ return(
   </div>
 )
 }
+
 export default App
