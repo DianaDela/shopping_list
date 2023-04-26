@@ -1,7 +1,9 @@
 import { useState } from "react"
 import ListItem from "./components/ListItem";
 import NewListItemButtom from "./components/NewListItemButton";
+import ClearListButton from "./components/ClearListButton";
 import Swal from "sweetalert2";
+
 function App() {
   const [listItems, setListItems] = useState([
     {
@@ -26,8 +28,7 @@ function App() {
       checked:false
     },
   ]);
-
-const handleNewListItemButtom = async () =>{
+  const handleNewListItemButtom = async () =>{
     const {value} = await Swal.fire({
       title:"New Item Information",
       html:`<input 
@@ -52,7 +53,7 @@ const handleNewListItemButtom = async () =>{
             placeholder="Unit"
             />`,
       confirmButtonText:"Add item",
-      showCloseButtom: true,
+      showCloseButton: true,
       showCancelButton: true,
       focusConfirm: false,
       cancelButtonText: "Dismiss",
@@ -60,22 +61,21 @@ const handleNewListItemButtom = async () =>{
         const name= Swal.getPopup().querySelector('#name').value;
         const quantity= Swal.getPopup().querySelector('#quantity').value;
         const unit= Swal.getPopup().querySelector('#unit').value;
-
         if (!name|| !quantity || !unit) {
           Swal.showValidationMessage('Please enter the item full information');
         }
         return{name, quantity, unit}
       },
     })
+
+    if(!value.name || !value.quantity || !value.unit) return
+
     setListItems([
       ...listItems,
       {id: (listItems.length + 1).toString(), ...value, checked:false},
     ]);
-
     console.log({value});
   }
-
-
   const handleCheckboxChange = (e) =>{
     const newList = listItems.map(item => {
       if(item.id === e.target.name){
@@ -93,6 +93,7 @@ return(
        <h1>Shopping List</h1>
       </div>
        <div className="col-2 text-end">
+          <ClearListButton setListItems={setListItems}/>
           <NewListItemButtom handleButtom={handleNewListItemButtom} />
        </div>
     </div>
@@ -112,6 +113,7 @@ return(
     <hr />
     <div className="row">
       <div className="col text-end">
+      <ClearListButton setListItems={setListItems}/>
       <NewListItemButtom handleButtom={handleNewListItemButtom} />
       </div>
     </div>
