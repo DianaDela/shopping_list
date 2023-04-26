@@ -1,8 +1,7 @@
 import { useState } from "react"
 import ListItem from "./components/ListItem";
-import NewListItemButton from "./components/NewListItemButton";
+import NewListItemButtom from "./components/NewListItemButton";
 import Swal from "sweetalert2";
-
 function App() {
   const [listItems, setListItems] = useState([
     {
@@ -28,9 +27,54 @@ function App() {
     },
   ]);
 
-  const handleNewListItemButtom = () =>{
-    Swal.fire('Any fool can use a computer')
+const handleNewListItemButtom = async () =>{
+    const {value} = await Swal.fire({
+      title:"New Item Information",
+      html:`<input 
+            type="text" 
+            id="name" 
+            name="name" 
+            class="swal2-input" 
+            placeholder="Item"
+            />
+            <input 
+            type="number" 
+            id="quantity" 
+            name="quantity" 
+            class="swal2-input" 
+            placeholder="Qty"
+            />
+            <input 
+            type="text" 
+            id="unit" 
+            name="unit" 
+            class="swal2-input" 
+            placeholder="Unit"
+            />`,
+      confirmButtonText:"Add item",
+      showCloseButtom: true,
+      showCancelButton: true,
+      focusConfirm: false,
+      cancelButtonText: "Dismiss",
+      preConfirm: () =>{
+        const name= Swal.getPopup().querySelector('#name').value;
+        const quantity= Swal.getPopup().querySelector('#quantity').value;
+        const unit= Swal.getPopup().querySelector('#unit').value;
+
+        if (!name|| !quantity || !unit) {
+          Swal.showValidationMessage('Please enter the item full information');
+        }
+        return{name, quantity, unit}
+      },
+    })
+    setListItems([
+      ...listItems,
+      {id: (listItems.length + 1).toString(), ...value, checked:false},
+    ]);
+
+    console.log({value});
   }
+
 
   const handleCheckboxChange = (e) =>{
     const newList = listItems.map(item => {
@@ -40,8 +84,7 @@ function App() {
       return item
     })
     setListItems(newList);
-    };
-
+  };
 return(
   <div className="container text-center">
     <div className="row">
@@ -50,10 +93,10 @@ return(
        <h1>Shopping List</h1>
       </div>
        <div className="col-2 text-end">
-             <NewListItemButton handleButtom={handleNewListItemButtom} />
+          <NewListItemButtom handleButtom={handleNewListItemButtom} />
        </div>
-        </div>
-        <hr />
+    </div>
+    <hr />
     {
       listItems.map((listItem)=>(
         <ListItem
@@ -64,12 +107,12 @@ return(
         checked={listItem.checked}
         handleCheckboxChange={handleCheckboxChange}
         />
-         ))
+      ))
     }
     <hr />
     <div className="row">
       <div className="col text-end">
-       <NewListItemButton handleButtom={handleNewListItemButtom} />
+      <NewListItemButtom handleButtom={handleNewListItemButtom} />
       </div>
     </div>
   </div>
