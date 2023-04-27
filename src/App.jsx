@@ -3,31 +3,12 @@ import ListItem from "./components/ListItem";
 import NewListItemButtom from "./components/NewListItemButton";
 import ClearListButton from "./components/ClearListButton";
 import Swal from "sweetalert2";
+import {v4 as uuidv4} from 'uuid';
 
 function App() {
-  const [listItems, setListItems] = useState([
-    {
-      id:"1",
-      name:"Tortillas",
-      quantity:"2",
-      unit:"kg",
-      checked:false
-    },
-    {
-      id:"2",
-      name:"Aceite",
-      quantity:"900",
-      unit:"ml",
-      checked:false
-    },
-    {
-      id:"3",
-      name:"Jabón",
-      quantity:"1",
-      unit:"pza",
-      checked:false
-    },
-  ]);
+  const [listItems, setListItems] = useState(
+      JSON.parse (localStorage.getItem("listItems")) || []
+  );
 
   const handleNewListItemButtom = async () =>{
     const {value} = await Swal.fire({
@@ -70,14 +51,18 @@ function App() {
       },
     })
 
-    if(!value.name || !value.quantity || !value.unit) return
+    if(!value.name || !value.quantity || !value.unit) return 
 
-    setListItems([
+    const newList=[
       ...listItems,
-      {id: (listItems.length + 1).toString(), ...value, checked:false},
-    ]);
+      {id:uuidv4(), ...value, checked:false},
+    ]
 
-    console.log({value});
+    localStorage.setItem("listItems", JSON.stringify(newList));
+
+    setListItems(newList);
+
+    console.log({value}); 
   }
 
 
@@ -88,6 +73,8 @@ function App() {
       }
       return item
     })
+    localStorage.setItem("listItems", JSON.stringify(newList))
+
     setListItems(newList);
   };
 
@@ -105,21 +92,33 @@ return(
     </div>
     <hr />
     {
+      listItems.length === 0 && (
+        <h3>
+          Empty list...
+        </h3>
+      )
+    }
+    {
       listItems.map((listItem)=>(
-        <ListItem
-        item={listItem}
-        listItems={listItems}
-        setListItems={setListItems}
-        handleCheckboxChange={handleCheckboxChange}
-        />
-      ))
+          <ListItem
+          key={listItem.id}
+          item={listItem}
+          listItems={listItems}
+          setListItems={setListItems}
+          handleCheckboxChange={handleCheckboxChange}
+          />
+        ))
     }
     <hr />
     <div className="row">
-      <div className="col text-end">
-      <ClearListButton setListItems={setListItems}/>
-      <NewListItemButtom handleButtom={handleNewListItemButtom} />
-      </div>
+      {
+        listItems.length >= 5 && (
+          <div className="col text-end">
+          <ClearListButton setListItems={setListItems}/>
+          <NewListItemButtom handleButtom={handleNewListItemButtom} />
+          </div>
+        )
+      }
     </div>
   </div>
 )
